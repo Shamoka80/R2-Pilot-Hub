@@ -13,7 +13,6 @@
       <nav>
         <a href="./index.html">Home</a>
         <a href="./apply.html">Apply</a>
-        <a href="./login.html">Participant</a>
         <a href="./admin-login.html">Admin</a>
       </nav>
     </div>
@@ -22,13 +21,66 @@
   <main class="container">
     <section class="page-shell">
       <h2>Apply</h2>
-      <div class="placeholder">
-        Phase 2 placeholder. Functional application form will be added in Phase 4.
-      </div>
+      <p class="muted">
+        Submit your pilot participation application below.
+      </p>
+
+      <form id="application-form">
+        <div class="field-grid">
+          <div>
+            <label for="applicant_name">Full Name</label>
+            <input id="applicant_name" name="applicant_name" type="text" required />
+          </div>
+
+          <div>
+            <label for="applicant_email">Email</label>
+            <input id="applicant_email" name="applicant_email" type="email" required />
+          </div>
+        </div>
+
+        <div>
+          <label for="organization_name">Organization Name</label>
+          <input id="organization_name" name="organization_name" type="text" />
+        </div>
+
+        <div class="field-grid">
+          <div>
+            <label for="group_interest">Group Interest</label>
+            <select id="group_interest" name="group_interest">
+              <option value="">Select one</option>
+              <option value="Facility Group">Facility Group</option>
+              <option value="Consultant Group">Consultant Group</option>
+              <option value="Certification Review Group">Certification Review Group</option>
+              <option value="Program Observer Group">Program Observer Group</option>
+            </select>
+          </div>
+
+          <div>
+            <label for="scenario_context">Scenario Context</label>
+            <select id="scenario_context" name="scenario_context">
+              <option value="">Select one</option>
+              <option value="First-Time Seeker">First-Time Seeker</option>
+              <option value="Active Certified">Active Certified</option>
+              <option value="Lapsed / Not Renewed">Lapsed / Not Renewed</option>
+              <option value="Failed / Revoked / Suspended / Remediation-Focused">Failed / Revoked / Suspended / Remediation-Focused</option>
+            </select>
+          </div>
+        </div>
+
+        <div>
+          <label for="notes">Notes</label>
+          <textarea id="notes" name="notes" rows="6" placeholder="Briefly describe your interest, role, or relevant background."></textarea>
+        </div>
+
+        <button type="submit">Submit Application</button>
+        <p id="application-message" class="message"></p>
+      </form>
     </section>
   </main>
 
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script src="./assets/js/config.js"></script>
-  <script src="./assets/js/app.js"></script>
+  <script src="./assets/js/supabase-client.js"></script>
+  <script src="./assets/js/apply.js"></script>
 </body>
 </html>
