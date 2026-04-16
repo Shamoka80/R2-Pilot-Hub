@@ -13,22 +13,35 @@
       <nav>
         <a href="./index.html">Home</a>
         <a href="./apply.html">Apply</a>
-        <a href="./login.html">Participant</a>
         <a href="./admin-login.html">Admin</a>
       </nav>
     </div>
   </header>
 
   <main class="container">
-    <section class="page-shell">
+    <section class="page-shell narrow">
       <h2>Admin Login</h2>
-      <div class="placeholder">
-        Phase 2 placeholder. Functional application form will be added in Phase 4.
-      </div>
+
+      <form id="admin-login-form">
+        <div>
+          <label for="admin_email">Email</label>
+          <input id="admin_email" name="admin_email" type="email" required />
+        </div>
+
+        <div>
+          <label for="admin_password">Password</label>
+          <input id="admin_password" name="admin_password" type="password" required />
+        </div>
+
+        <button type="submit">Sign In</button>
+        <p id="admin-login-message" class="message"></p>
+      </form>
     </section>
   </main>
 
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script src="./assets/js/config.js"></script>
-  <script src="./assets/js/app.js"></script>
+  <script src="./assets/js/supabase-client.js"></script>
+  <script src="./assets/js/admin-login.js"></script>
 </body>
 </html>
