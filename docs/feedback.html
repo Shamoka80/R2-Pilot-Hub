@@ -12,23 +12,33 @@
       <h1>R2 Pilot Recruitment Hub</h1>
       <nav>
         <a href="./index.html">Home</a>
-        <a href="./apply.html">Apply</a>
-        <a href="./login.html">Participant</a>
-        <a href="./admin-login.html">Admin</a>
+        <a href="./applications.html">Applications</a>
+        <a href="./participants.html">Participants</a>
+        <a href="./feedback.html">Feedback</a>
       </nav>
     </div>
   </header>
 
   <main class="container">
     <section class="page-shell">
-      <h2>Feedback / Issues</h2>
-      <div class="placeholder">
-        Phase 2 placeholder. Functional application form will be added in Phase 4.
+      <div class="toolbar">
+        <div>
+          <h2>Feedback / Issues</h2>
+          <p class="muted">Review participant-submitted issues, notes, requests, and comments.</p>
+        </div>
+        <div class="toolbar-actions">
+          <button id="refresh-feedback-page" type="button">Refresh</button>
+        </div>
       </div>
+
+      <p id="admin-feedback-message" class="message"></p>
+      <div id="admin-feedback-list" class="stack"></div>
     </section>
   </main>
 
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script src="./assets/js/config.js"></script>
-  <script src="./assets/js/app.js"></script>
+  <script src="./assets/js/supabase-client.js"></script>
+  <script src="./assets/js/admin-feedback.js"></script>
 </body>
 </html>
