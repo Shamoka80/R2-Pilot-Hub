@@ -1,0 +1,4 @@
+project_id = "iojukwpjctubwvblaarf"
+
+[functions.create-participant]
+verify_jwt = false
