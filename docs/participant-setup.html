@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Participant Setup | R2 Pilot Recruitment Hub</title>
+  <link rel="stylesheet" href="./assets/css/styles.css" />
+</head>
+<body>
+  <header class="site-header">
+    <div class="container">
+      <h1>R2 Pilot Recruitment Hub</h1>
+    </div>
+  </header>
+
+  <main class="container">
+    <section class="page-shell narrow">
+      <h2>Set Your Password</h2>
+      <p class="muted">
+        Use this page only after opening the setup/reset email link.
+      </p>
+
+      <form id="participant-setup-form">
+        <div>
+          <label for="new_password">New Password</label>
+          <input id="new_password" name="new_password" type="password" required />
+        </div>
+
+        <div>
+          <label for="confirm_password">Confirm Password</label>
+          <input id="confirm_password" name="confirm_password" type="password" required />
+        </div>
+
+        <button type="submit">Save Password</button>
+        <p id="participant-setup-message" class="message"></p>
+      </form>
+    </section>
+  </main>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="./assets/js/config.js"></script>
+  <script src="./assets/js/supabase-client.js"></script>
+  <script src="./assets/js/participant-setup.js"></script>
+</body>
+</html>
