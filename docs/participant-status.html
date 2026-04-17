@@ -11,10 +11,8 @@
     <div class="container">
       <h1>R2 Pilot Recruitment Hub</h1>
       <nav>
-        <a href="./index.html">Home</a>
-        <a href="./apply.html">Apply</a>
-        <a href="./login.html">Participant</a>
-        <a href="./admin-login.html">Admin</a>
+        <a href="./participant-dashboard.html">Dashboard</a>
+        <a href="./participant-status.html">My Status</a>
       </nav>
     </div>
   </header>
@@ -22,13 +20,18 @@
   <main class="container">
     <section class="page-shell">
       <h2>My Status</h2>
-      <div class="placeholder">
-        Phase 2 placeholder. Functional application form will be added in Phase 4.
+      <p class="muted">This page shows your current participant assignment record.</p>
+
+      <p id="participant-status-message" class="message"></p>
+      <div id="participant-status-content" class="stack">
+        <div class="placeholder">Loading status information...</div>
       </div>
     </section>
   </main>
 
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script src="./assets/js/config.js"></script>
-  <script src="./assets/js/app.js"></script>
+  <script src="./assets/js/supabase-client.js"></script>
+  <script src="./assets/js/participant-status.js"></script>
 </body>
 </html>
