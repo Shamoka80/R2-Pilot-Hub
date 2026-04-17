@@ -20,15 +20,51 @@
   </header>
 
   <main class="container">
-    <section class="page-shell">
-      <h2>Participant Login</h2>
-      <div class="placeholder">
-        Phase 2 placeholder. Functional application form will be added in Phase 4.
+    <section class="page-shell narrow">
+      <h2>Participant Access</h2>
+      <p class="muted">
+        Existing participants may sign in below. If your participant account has already been created,
+        but you do not yet have a password, use the setup/reset form to receive an email link.
+      </p>
+
+      <div class="stack">
+        <article class="item-card">
+          <h3>Sign In</h3>
+          <form id="participant-login-form">
+            <div>
+              <label for="participant_email">Email</label>
+              <input id="participant_email" name="participant_email" type="email" required />
+            </div>
+
+            <div>
+              <label for="participant_password">Password</label>
+              <input id="participant_password" name="participant_password" type="password" required />
+            </div>
+
+            <button type="submit">Sign In</button>
+            <p id="participant-login-message" class="message"></p>
+          </form>
+        </article>
+
+        <article class="item-card">
+          <h3>Send Setup / Reset Link</h3>
+          <form id="participant-reset-form">
+            <div>
+              <label for="participant_reset_email">Email</label>
+              <input id="participant_reset_email" name="participant_reset_email" type="email" required />
+            </div>
+
+            <button type="submit">Send Email Link</button>
+            <p id="participant-reset-message" class="message"></p>
+          </form>
+        </article>
       </div>
     </section>
   </main>
 
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script src="./assets/js/config.js"></script>
-  <script src="./assets/js/app.js"></script>
+  <script src="./assets/js/supabase-client.js"></script>
+  <script src="./assets/js/participant-login.js"></script>
 </body>
 </html>
