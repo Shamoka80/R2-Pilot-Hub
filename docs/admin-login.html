@@ -25,15 +25,19 @@
       <form id="admin-login-form">
         <div>
           <label for="admin_email">Email</label>
-          <input id="admin_email" name="admin_email" type="email" required />
+          <input id="admin_email" name="admin_email" type="email" autocomplete="email" required />
         </div>
 
         <div>
           <label for="admin_password">Password</label>
-          <input id="admin_password" name="admin_password" type="password" required />
+          <input id="admin_password" name="admin_password" type="password" autocomplete="current-password" required />
         </div>
 
         <button type="submit">Sign In</button>
+        <div class="inline-actions">
+          <button id="admin-forgot-password" type="button" class="link-btn">Forgot password?</button>
+        </div>
+
         <p id="admin-login-message" class="message"></p>
       </form>
     </section>

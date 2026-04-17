@@ -243,3 +243,23 @@ th, td {
   background: #991b1b;
   color: #fff;
 }
+
+.inline-actions {
+  margin-top: -0.25rem;
+}
+
+.link-btn {
+  width: auto;
+  padding: 0;
+  border: 0;
+  border-radius: 0;
+  background: transparent;
+  color: var(--accent);
+  font-weight: 600;
+  text-decoration: underline;
+  cursor: pointer;
+}
+
+.link-btn:hover {
+  color: var(--accent-dark);
+}
