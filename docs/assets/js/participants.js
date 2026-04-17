@@ -158,30 +158,57 @@ document.addEventListener("DOMContentLoaded", () => {
 
     const functionUrl = `${window.APP_CONFIG.supabaseUrl}/functions/v1/create-participant`;
 
-    const response = await fetch(functionUrl, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        "Authorization": `Bearer ${accessToken}`
-      },
-      body: JSON.stringify({
-        application_id: application.id,
-        applicant_name: application.applicant_name,
-        applicant_email: application.applicant_email,
-        group_name,
-        scenario_name,
-        wave_name
-      })
-    });
+    let response;
+let result;
 
-    const result = await response.json();
+try {
+  response = await fetch(functionUrl, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      "Authorization": `Bearer ${accessToken}`
+    },
+    body: JSON.stringify({
+      application_id: application.id,
+      applicant_name: application.applicant_name,
+      applicant_email: application.applicant_email,
+      group_name,
+      scenario_name,
+      wave_name
+    })
+  });
+} catch (networkError) {
+  console.error("Network error while calling create-participant:", networkError);
+  message.textContent = `Network error: ${networkError.message}`;
+  message.className = "message error";
+  return;
+}
 
-    if (!response.ok) {
-      console.error(result);
-      message.textContent = result.error || "Participant creation failed.";
-      message.className = "message error";
-      return;
-    }
+try {
+  result = await response.json();
+} catch (parseError) {
+  const rawText = await response.text().catch(() => "");
+  console.error("Failed to parse JSON response:", parseError, rawText);
+  message.textContent = `Function returned non-JSON response. HTTP ${response.status}.`;
+  message.className = "message error";
+  return;
+}
+
+if (!response.ok) {
+  console.error("Function error response:", {
+    status: response.status,
+    body: result
+  });
+
+  const detail =
+    result?.error ||
+    result?.message ||
+    JSON.stringify(result);
+
+  message.textContent = `Participant creation failed. HTTP ${response.status}. ${detail}`;
+  message.className = "message error";
+  return;
+}
 
     message.textContent = `Participant created successfully for ${application.applicant_email}.`;
     message.className = "message success";
