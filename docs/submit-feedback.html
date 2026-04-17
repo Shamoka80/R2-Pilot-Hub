@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Submit Issue / Note / Request | R2 Pilot Recruitment Hub</title>
+  <title>Submit Feedback | R2 Pilot Recruitment Hub</title>
   <link rel="stylesheet" href="./assets/css/styles.css" />
 </head>
 <body>
@@ -11,24 +11,61 @@
     <div class="container">
       <h1>R2 Pilot Recruitment Hub</h1>
       <nav>
-        <a href="./index.html">Home</a>
-        <a href="./apply.html">Apply</a>
-        <a href="./login.html">Participant</a>
-        <a href="./admin-login.html">Admin</a>
+        <a href="./participant-dashboard.html">Dashboard</a>
+        <a href="./participant-status.html">My Status</a>
+        <a href="./submit-feedback.html">Submit Feedback</a>
       </nav>
     </div>
   </header>
 
   <main class="container">
-    <section class="page-shell">
-      <h2>Submit Issue / Note / Request</h2>
-      <div class="placeholder">
-        Phase 2 placeholder. Functional application form will be added in Phase 4.
-      </div>
+    <section class="page-shell narrow">
+      <h2>Submit Feedback</h2>
+      <p class="muted">
+        Use this form to submit an issue, note, request, or comment related to your pilot experience.
+      </p>
+
+      <form id="feedback-form">
+        <div>
+          <label for="kind">Type</label>
+          <select id="kind" name="kind" required>
+            <option value="">Select one</option>
+            <option value="issue">Issue</option>
+            <option value="note">Note</option>
+            <option value="request">Request</option>
+            <option value="comment">Comment</option>
+          </select>
+        </div>
+
+        <div>
+          <label for="title">Title</label>
+          <input id="title" name="title" type="text" required />
+        </div>
+
+        <div>
+          <label for="details">Details</label>
+          <textarea id="details" name="details" rows="8" required></textarea>
+        </div>
+
+        <div>
+          <label for="severity">Severity</label>
+          <select id="severity" name="severity" required>
+            <option value="">Select one</option>
+            <option value="low">Low</option>
+            <option value="medium">Medium</option>
+            <option value="high">High</option>
+          </select>
+        </div>
+
+        <button type="submit">Submit Feedback</button>
+        <p id="feedback-message" class="message"></p>
+      </form>
     </section>
   </main>
 
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script src="./assets/js/config.js"></script>
-  <script src="./assets/js/app.js"></script>
+  <script src="./assets/js/supabase-client.js"></script>
+  <script src="./assets/js/submit-feedback.js"></script>
 </body>
 </html>
