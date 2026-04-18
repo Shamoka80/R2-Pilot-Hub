@@ -6,14 +6,66 @@ document.addEventListener("DOMContentLoaded", () => {
 
   if (!window.sb) return;
 
+  function setLoginMessage(text, type = "error") {
+    loginMessage.textContent = text;
+    loginMessage.className = `message ${type}`;
+  }
+
+  function showReasonMessageFromUrl() {
+    const params = new URLSearchParams(window.location.search);
+    const reason = params.get("reason");
+
+    if (!reason) return;
+
+    const reasonMessages = {
+      inactive: "Your participant account is currently inactive. Please contact the administrator.",
+      archived: "Your participant account has been archived. Please contact the administrator.",
+      no_record: "Your account is not linked to an active participant record. Please contact the administrator.",
+      access: "You do not currently have participant access."
+    };
+
+    const text = reasonMessages[reason];
+    if (text) {
+      setLoginMessage(text, "error");
+    }
+  }
+
   async function redirectIfAlreadySignedIn() {
-    const { data: userData } = await window.sb.auth.getUser();
-    const user = userData?.user;
-    if (user) {
+    if (!window.AuthGuards) return;
+
+    const context = await window.AuthGuards.getSessionContext();
+
+    if (!context.user) return;
+
+    if (context.profile?.role === "admin") {
+      window.location.href = "./admin-dashboard.html";
+      return;
+    }
+
+    if (context.profile?.role === "participant") {
+      if (!context.participant) {
+        await window.sb.auth.signOut();
+        setLoginMessage("Your account is not linked to an active participant record. Please contact the administrator.");
+        return;
+      }
+
+      if (!context.participant.is_active) {
+        await window.sb.auth.signOut();
+        setLoginMessage("Your participant account is currently inactive. Please contact the administrator.");
+        return;
+      }
+
+      if (context.participant.onboard_status === "archived") {
+        await window.sb.auth.signOut();
+        setLoginMessage("Your participant account has been archived. Please contact the administrator.");
+        return;
+      }
+
       window.location.href = "./participant-dashboard.html";
     }
   }
 
+  showReasonMessageFromUrl();
   redirectIfAlreadySignedIn();
 
   loginForm?.addEventListener("submit", async (event) => {
@@ -32,8 +84,43 @@ document.addEventListener("DOMContentLoaded", () => {
 
     if (error) {
       console.error(error);
-      loginMessage.textContent = error.message;
-      loginMessage.className = "message error";
+      setLoginMessage(error.message, "error");
+      return;
+    }
+
+    if (!window.AuthGuards) {
+      window.location.href = "./participant-dashboard.html";
+      return;
+    }
+
+    const context = await window.AuthGuards.getSessionContext();
+
+    if (context.profile?.role === "admin") {
+      window.location.href = "./admin-dashboard.html";
+      return;
+    }
+
+    if (context.profile?.role !== "participant") {
+      await window.sb.auth.signOut();
+      setLoginMessage("You do not currently have participant access.", "error");
+      return;
+    }
+
+    if (!context.participant) {
+      await window.sb.auth.signOut();
+      setLoginMessage("Your account is not linked to an active participant record. Please contact the administrator.", "error");
+      return;
+    }
+
+    if (!context.participant.is_active) {
+      await window.sb.auth.signOut();
+      setLoginMessage("Your participant account is currently inactive. Please contact the administrator.", "error");
+      return;
+    }
+
+    if (context.participant.onboard_status === "archived") {
+      await window.sb.auth.signOut();
+      setLoginMessage("Your participant account has been archived. Please contact the administrator.", "error");
       return;
     }
 

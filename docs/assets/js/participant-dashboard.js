@@ -5,50 +5,20 @@ document.addEventListener("DOMContentLoaded", () => {
 
   if (!window.sb || !content) return;
 
-  async function requireParticipantSession() {
-    const { data: userData } = await window.sb.auth.getUser();
-    const user = userData?.user;
-
-    if (!user) {
-      window.location.href = "./login.html";
-      return null;
-    }
-
-    return user;
-  }
-
   async function loadDashboard() {
     message.textContent = "Loading your dashboard...";
     message.className = "message";
 
-    const user = await requireParticipantSession();
-    if (!user) return;
-
-    const { data: profile, error: profileError } = await window.sb
-      .from("profiles")
-      .select("id, email, full_name, role")
-      .eq("id", user.id)
-      .single();
-
-    if (profileError) {
-      console.error(profileError);
-      message.textContent = profileError.message;
+    if (!window.AuthGuards) {
+      message.textContent = "Access guard is not available.";
       message.className = "message error";
       return;
     }
 
-    const { data: participant, error: participantError } = await window.sb
-      .from("participants")
-      .select("*")
-      .eq("user_id", user.id)
-      .maybeSingle();
+    const context = await window.AuthGuards.requireParticipantPage();
+    if (!context) return;
 
-    if (participantError) {
-      console.error(participantError);
-      message.textContent = participantError.message;
-      message.className = "message error";
-      return;
-    }
+    const { profile, participant } = context;
 
     content.innerHTML = `
       <article class="item-card">
