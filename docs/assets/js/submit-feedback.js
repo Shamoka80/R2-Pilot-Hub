@@ -4,30 +4,24 @@ document.addEventListener("DOMContentLoaded", () => {
 
   if (!window.sb || !form) return;
 
-  async function requireParticipantSession() {
-    const { data: userData } = await window.sb.auth.getUser();
-    const user = userData?.user;
-
-    if (!user) {
-      window.location.href = "./login.html";
-      return null;
-    }
-
-    return user;
-  }
-
   form.addEventListener("submit", async (event) => {
     event.preventDefault();
     message.textContent = "Submitting feedback...";
     message.className = "message";
 
-    const user = await requireParticipantSession();
-    if (!user) return;
+    if (!window.AuthGuards) {
+      message.textContent = "Access guard is not available.";
+      message.className = "message error";
+      return;
+    }
+
+    const context = await window.AuthGuards.requireParticipantPage();
+    if (!context) return;
 
     const formData = new FormData(form);
 
     const payload = {
-      submitted_by: user.id,
+      submitted_by: context.user.id,
       kind: formData.get("kind")?.toString().trim(),
       title: formData.get("title")?.toString().trim(),
       details: formData.get("details")?.toString().trim(),
@@ -47,7 +41,7 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 
     form.reset();
-message.textContent = "Feedback submitted successfully. You can review it on the My Feedback page.";
-message.className = "message success";
+    message.textContent = "Feedback submitted successfully. You can review it on the My Feedback page.";
+    message.className = "message success";
   });
 });

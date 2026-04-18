@@ -5,18 +5,6 @@ document.addEventListener("DOMContentLoaded", () => {
 
   if (!window.sb || !list) return;
 
-  async function requireParticipantSession() {
-    const { data: userData } = await window.sb.auth.getUser();
-    const user = userData?.user;
-
-    if (!user) {
-      window.location.href = "./login.html";
-      return null;
-    }
-
-    return user;
-  }
-
   function badgeClass(status) {
     if (status === "resolved") return "badge success";
     if (status === "closed") return "badge";
@@ -60,13 +48,19 @@ document.addEventListener("DOMContentLoaded", () => {
     message.textContent = "Loading your feedback history...";
     message.className = "message";
 
-    const user = await requireParticipantSession();
-    if (!user) return;
+    if (!window.AuthGuards) {
+      message.textContent = "Access guard is not available.";
+      message.className = "message error";
+      return;
+    }
+
+    const context = await window.AuthGuards.requireParticipantPage();
+    if (!context) return;
 
     const { data, error } = await window.sb
       .from("feedback_items")
       .select("*")
-      .eq("submitted_by", user.id)
+      .eq("submitted_by", context.user.id)
       .order("created_at", { ascending: false });
 
     if (error) {

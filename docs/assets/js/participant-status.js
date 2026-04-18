@@ -8,26 +8,16 @@ document.addEventListener("DOMContentLoaded", () => {
     message.textContent = "Loading your status...";
     message.className = "message";
 
-    const { data: userData } = await window.sb.auth.getUser();
-    const user = userData?.user;
-
-    if (!user) {
-      window.location.href = "./login.html";
-      return;
-    }
-
-    const { data: participant, error } = await window.sb
-      .from("participants")
-      .select("*")
-      .eq("user_id", user.id)
-      .maybeSingle();
-
-    if (error) {
-      console.error(error);
-      message.textContent = error.message;
+    if (!window.AuthGuards) {
+      message.textContent = "Access guard is not available.";
       message.className = "message error";
       return;
     }
+
+    const context = await window.AuthGuards.requireParticipantPage();
+    if (!context) return;
+
+    const { participant } = context;
 
     if (!participant) {
       content.innerHTML = `<div class="placeholder">No participant status record is available yet.</div>`;
