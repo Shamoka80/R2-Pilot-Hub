@@ -12,23 +12,38 @@
       <h1>R2 Pilot Recruitment Hub</h1>
       <nav>
         <a href="./index.html">Home</a>
-        <a href="./apply.html">Apply</a>
-        <a href="./login.html">Participant</a>
-        <a href="./admin-login.html">Admin</a>
+        <a href="./admin-dashboard.html">Dashboard</a>
+        <a href="./applications.html">Applications</a>
+        <a href="./participants.html">Participants</a>
+        <a href="./feedback.html">Feedback</a>
       </nav>
     </div>
   </header>
 
   <main class="container">
     <section class="page-shell">
-      <h2>Admin Dashboard</h2>
-      <div class="placeholder">
-        Phase 2 placeholder. Functional application form will be added in Phase 4.
+      <div class="toolbar">
+        <div>
+          <h2>Admin Dashboard</h2>
+          <p class="muted">Centralized operational view of applications, participants, feedback, and recent admin activity.</p>
+        </div>
+        <div class="toolbar-actions">
+          <button id="refresh-admin-dashboard" type="button">Refresh</button>
+          <button id="admin-dashboard-signout" type="button" class="danger-btn">Sign Out</button>
+        </div>
+      </div>
+
+      <p id="admin-dashboard-message" class="message"></p>
+
+      <div id="admin-dashboard-content" class="stack">
+        <div class="placeholder">Loading dashboard data...</div>
       </div>
     </section>
   </main>
 
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script src="./assets/js/config.js"></script>
-  <script src="./assets/js/app.js"></script>
+  <script src="./assets/js/supabase-client.js"></script>
+  <script src="./assets/js/admin-dashboard.js"></script>
 </body>
 </html>
