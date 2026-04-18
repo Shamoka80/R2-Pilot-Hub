@@ -34,6 +34,10 @@ document.addEventListener("DOMContentLoaded", () => {
           <div><strong>Wave:</strong> ${participant.wave_name || "—"}</div>
           <div><strong>Onboarding Status:</strong> ${participant.onboard_status || "—"}</div>
           <div><strong>Active:</strong> ${participant.is_active ? "Yes" : "No"}</div>
+          <div><strong>NDA Status:</strong> ${participant.nda_status || "—"}</div>
+          <div><strong>Orientation Status:</strong> ${participant.orientation_status || "—"}</div>
+          <div><strong>Packet URL:</strong> ${participant.onboarding_packet_url || "—"}</div>
+          <div><strong>Materials Acknowledged:</strong> ${participant.materials_acknowledged_at ? new Date(participant.materials_acknowledged_at).toLocaleString() : "Not yet acknowledged."}</div>
           <div><strong>Approved At:</strong> ${participant.approved_at ? new Date(participant.approved_at).toLocaleString() : "—"}</div>
           <div><strong>Application ID:</strong> ${participant.application_id || "—"}</div>
         </div>

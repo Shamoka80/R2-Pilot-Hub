@@ -164,6 +164,40 @@ document.addEventListener("DOMContentLoaded", () => {
               <option value="false" ${!item.is_active ? "selected" : ""}>false</option>
             </select>
           </div>
+
+          <div>
+            <label for="nda-${item.user_id}">NDA Status</label>
+            <select id="nda-${item.user_id}">
+              <option value="not_sent" ${item.nda_status === "not_sent" ? "selected" : ""}>not_sent</option>
+              <option value="sent" ${item.nda_status === "sent" ? "selected" : ""}>sent</option>
+              <option value="received" ${item.nda_status === "received" ? "selected" : ""}>received</option>
+              <option value="complete" ${item.nda_status === "complete" ? "selected" : ""}>complete</option>
+            </select>
+          </div>
+
+          <div>
+            <label for="orientation-${item.user_id}">Orientation Status</label>
+            <select id="orientation-${item.user_id}">
+              <option value="not_scheduled" ${item.orientation_status === "not_scheduled" ? "selected" : ""}>not_scheduled</option>
+              <option value="scheduled" ${item.orientation_status === "scheduled" ? "selected" : ""}>scheduled</option>
+              <option value="completed" ${item.orientation_status === "completed" ? "selected" : ""}>completed</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="decision-block">
+          <label for="packet-url-${item.user_id}">Onboarding Packet URL</label>
+          <input id="packet-url-${item.user_id}" type="url" value="${item.onboarding_packet_url || ""}" />
+        </div>
+
+        <div class="decision-block">
+          <label for="instructions-${item.user_id}">Onboarding Instructions</label>
+          <textarea id="instructions-${item.user_id}" rows="4">${item.onboarding_instructions || ""}</textarea>
+        </div>
+
+        <div class="notes-block">
+          <strong>Materials Acknowledged</strong>
+          <p>${item.materials_acknowledged_at ? new Date(item.materials_acknowledged_at).toLocaleString() : "Not yet acknowledged by participant."}</p>
         </div>
 
         <div class="actions">
@@ -317,6 +351,10 @@ document.addEventListener("DOMContentLoaded", () => {
     const wave_name = document.getElementById(`wave-${userId}`)?.value || null;
     const onboard_status = document.getElementById(`status-${userId}`)?.value || null;
     const is_active = document.getElementById(`active-${userId}`)?.value === "true";
+    const nda_status = document.getElementById(`nda-${userId}`)?.value || "not_sent";
+    const orientation_status = document.getElementById(`orientation-${userId}`)?.value || "not_scheduled";
+    const onboarding_packet_url = document.getElementById(`packet-url-${userId}`)?.value?.trim() || null;
+    const onboarding_instructions = document.getElementById(`instructions-${userId}`)?.value?.trim() || null;
 
     message.textContent = "Saving participant update...";
     message.className = "message";
@@ -328,7 +366,11 @@ document.addEventListener("DOMContentLoaded", () => {
         scenario_name,
         wave_name,
         onboard_status,
-        is_active
+        is_active,
+        nda_status,
+        orientation_status,
+        onboarding_packet_url,
+        onboarding_instructions
       })
       .eq("user_id", userId);
 
