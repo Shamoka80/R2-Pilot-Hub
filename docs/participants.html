@@ -11,11 +11,11 @@
     <div class="container">
       <h1>R2 Pilot Recruitment Hub</h1>
       <nav>
-  <a href="./index.html">Home</a>
-  <a href="./applications.html">Applications</a>
-  <a href="./participants.html">Participants</a>
-  <a href="./feedback.html">Feedback</a>
-</nav>
+        <a href="./index.html">Home</a>
+        <a href="./applications.html">Applications</a>
+        <a href="./participants.html">Participants</a>
+        <a href="./feedback.html">Feedback</a>
+      </nav>
     </div>
   </header>
 
@@ -24,7 +24,7 @@
       <div class="toolbar">
         <div>
           <h2>Participants</h2>
-          <p class="muted">Convert approved applications into managed pilot participants.</p>
+          <p class="muted">Create participants from approved applications and manage existing participant records.</p>
         </div>
         <div class="toolbar-actions">
           <button id="refresh-participants-page" type="button">Refresh</button>
@@ -32,7 +32,18 @@
       </div>
 
       <p id="participants-message" class="message"></p>
-      <div id="approved-applications-list" class="stack"></div>
+
+      <div class="stack">
+        <article class="item-card">
+          <h3>Approved Applications Awaiting Participant Creation</h3>
+          <div id="approved-applications-list" class="stack"></div>
+        </article>
+
+        <article class="item-card">
+          <h3>Existing Participants</h3>
+          <div id="existing-participants-list" class="stack"></div>
+        </article>
+      </div>
     </section>
   </main>
 
