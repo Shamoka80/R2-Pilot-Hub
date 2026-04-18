@@ -32,7 +32,7 @@ document.addEventListener("DOMContentLoaded", () => {
       return;
     }
 
-    window.location.href = "./applications.html";
+    window.location.href = "./admin-dashboard.html";
   }
 
   verifyAdminAndRedirect();
