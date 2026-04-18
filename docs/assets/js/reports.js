@@ -8,29 +8,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
   if (!window.sb) return;
 
-  async function requireAdmin() {
-    const { data: userData } = await window.sb.auth.getUser();
-    const user = userData?.user;
 
-    if (!user) {
-      window.location.href = "./admin-login.html";
-      return null;
-    }
-
-    const { data: profile, error } = await window.sb
-      .from("profiles")
-      .select("id, role, email")
-      .eq("id", user.id)
-      .single();
-
-    if (error || !profile || profile.role !== "admin") {
-      await window.sb.auth.signOut();
-      window.location.href = "./admin-login.html";
-      return null;
-    }
-
-    return profile;
-  }
 
   function escapeCsvValue(value) {
     if (value === null || value === undefined) return "";
@@ -252,10 +230,16 @@ document.addEventListener("DOMContentLoaded", () => {
     message.textContent = "Verifying admin access...";
     message.className = "message";
 
-    const admin = await requireAdmin();
-    if (!admin) return;
+    if (!window.AuthGuards) {
+      message.textContent = "Access guard is not available.";
+      message.className = "message error";
+      return;
+    }
 
-    message.textContent = `Reports page ready for ${admin.email}.`;
+    const context = await window.AuthGuards.requireAdminPage();
+    if (!context) return;
+
+    message.textContent = `Reports page ready for ${context.profile.email}.`;
     message.className = "message success";
   }
 

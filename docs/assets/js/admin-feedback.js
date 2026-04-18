@@ -5,29 +5,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
   if (!window.sb || !list) return;
 
-  async function requireAdmin() {
-    const { data: userData } = await window.sb.auth.getUser();
-    const user = userData?.user;
 
-    if (!user) {
-      window.location.href = "./admin-login.html";
-      return null;
-    }
-
-    const { data: profile, error } = await window.sb
-      .from("profiles")
-      .select("id, role, email")
-      .eq("id", user.id)
-      .single();
-
-    if (error || !profile || profile.role !== "admin") {
-      await window.sb.auth.signOut();
-      window.location.href = "./admin-login.html";
-      return null;
-    }
-
-    return profile;
-  }
 
   function renderItems(items) {
     if (!items.length) {
@@ -156,8 +134,15 @@ document.addEventListener("DOMContentLoaded", () => {
   refreshBtn?.addEventListener("click", loadFeedbackItems);
 
   (async () => {
-    const admin = await requireAdmin();
-    if (!admin) return;
+    if (!window.AuthGuards) {
+      message.textContent = "Access guard is not available.";
+      message.className = "message error";
+      return;
+    }
+
+    const context = await window.AuthGuards.requireAdminPage();
+    if (!context) return;
+
     await loadFeedbackItems();
   })();
 });

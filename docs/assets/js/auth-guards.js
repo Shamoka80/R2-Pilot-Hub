@@ -55,6 +55,11 @@
     window.location.href = `./login.html?reason=${encodeURIComponent(reason)}`;
   }
 
+  async function signOutAndRedirectToAdminLogin(reason) {
+    await window.sb.auth.signOut();
+    window.location.href = `./admin-login.html?reason=${encodeURIComponent(reason)}`;
+  }
+
   async function requireParticipantPage() {
     const context = await getSessionContext();
 
@@ -91,8 +96,32 @@
     return context;
   }
 
+  async function requireAdminPage() {
+    const context = await getSessionContext();
+
+    if (!context.user) {
+      window.location.href = "./admin-login.html";
+      return null;
+    }
+
+    if (context.profile?.role === "participant") {
+      window.location.href = "./participant-dashboard.html";
+      return null;
+    }
+
+    if (context.profile?.role !== "admin") {
+      await signOutAndRedirectToAdminLogin("access");
+      return null;
+    }
+
+    return context;
+  }
+
   window.AuthGuards = {
     getSessionContext,
-    requireParticipantPage
+    requireParticipantPage,
+    requireAdminPage,
+    signOutAndRedirectToParticipantLogin,
+    signOutAndRedirectToAdminLogin
   };
 })();

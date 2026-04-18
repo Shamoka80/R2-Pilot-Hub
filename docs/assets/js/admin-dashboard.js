@@ -6,29 +6,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
   if (!window.sb || !content) return;
 
-  async function requireAdmin() {
-    const { data: userData } = await window.sb.auth.getUser();
-    const user = userData?.user;
 
-    if (!user) {
-      window.location.href = "./admin-login.html";
-      return null;
-    }
-
-    const { data: profile, error } = await window.sb
-      .from("profiles")
-      .select("id, email, role, full_name")
-      .eq("id", user.id)
-      .single();
-
-    if (error || !profile || profile.role !== "admin") {
-      await window.sb.auth.signOut();
-      window.location.href = "./admin-login.html";
-      return null;
-    }
-
-    return profile;
-  }
 
   function countBy(items, key) {
     return items.reduce((acc, item) => {
@@ -120,8 +98,15 @@ document.addEventListener("DOMContentLoaded", () => {
     message.textContent = "Loading dashboard data...";
     message.className = "message";
 
-    const admin = await requireAdmin();
-    if (!admin) return;
+    if (!window.AuthGuards) {
+      message.textContent = "Access guard is not available.";
+      message.className = "message error";
+      return;
+    }
+
+    const context = await window.AuthGuards.requireAdminPage();
+    if (!context) return;
+    const admin = context.profile;
 
     const { data: applications, error: applicationsError } = await window.sb
       .from("applications")
