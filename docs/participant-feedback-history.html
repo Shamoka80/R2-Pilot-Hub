@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>My Feedback | R2 Pilot Recruitment Hub</title>
+  <link rel="stylesheet" href="./assets/css/styles.css" />
+</head>
+<body>
+  <header class="site-header">
+    <div class="container">
+      <h1>R2 Pilot Recruitment Hub</h1>
+      <nav>
+        <a href="./participant-dashboard.html">Dashboard</a>
+        <a href="./participant-status.html">My Status</a>
+        <a href="./submit-feedback.html">Submit Feedback</a>
+        <a href="./participant-feedback-history.html">My Feedback</a>
+      </nav>
+    </div>
+  </header>
+
+  <main class="container">
+    <section class="page-shell">
+      <div class="toolbar">
+        <div>
+          <h2>My Feedback</h2>
+          <p class="muted">View the feedback items you have submitted and see their current review status.</p>
+        </div>
+        <div class="toolbar-actions">
+          <button id="refresh-participant-feedback" type="button">Refresh</button>
+        </div>
+      </div>
+
+      <p id="participant-feedback-message" class="message"></p>
+      <div id="participant-feedback-list" class="stack">
+        <div class="placeholder">Loading your feedback history...</div>
+      </div>
+    </section>
+  </main>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="./assets/js/config.js"></script>
+  <script src="./assets/js/supabase-client.js"></script>
+  <script src="./assets/js/participant-feedback-history.js"></script>
+</body>
+</html>
