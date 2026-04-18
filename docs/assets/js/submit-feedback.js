@@ -47,7 +47,7 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 
     form.reset();
-    message.textContent = "Feedback submitted successfully.";
-    message.className = "message success";
+message.textContent = "Feedback submitted successfully. You can review it on the My Feedback page.";
+message.className = "message success";
   });
 });
