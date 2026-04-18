@@ -1,45 +1,54 @@
 document.addEventListener("DOMContentLoaded", () => {
   const form = document.getElementById("admin-login-form");
-  const forgotPasswordBtn = document.getElementById("admin-forgot-password");
   const message = document.getElementById("admin-login-message");
 
-  if (!form || !window.sb || !message) return;
+  if (!form || !window.sb) return;
 
-  function setMessage(text, type = "") {
+  function setMessage(text, type = "error") {
     message.textContent = text;
-    message.className = type ? `message ${type}` : "message";
+    message.className = `message ${type}`;
   }
 
-  function getRecoveryRedirectUrl() {
-    return new URL("./admin-reset-password.html", window.location.href).toString();
+  function showReasonMessageFromUrl() {
+    const params = new URLSearchParams(window.location.search);
+    const reason = params.get("reason");
+
+    if (!reason) return;
+
+    const reasonMessages = {
+      access: "You do not currently have administrator access."
+    };
+
+    const text = reasonMessages[reason];
+    if (text) {
+      setMessage(text, "error");
+    }
   }
 
-  async function verifyAdminAndRedirect() {
-    const { data: userData } = await window.sb.auth.getUser();
-    const user = userData?.user;
+  async function redirectIfAlreadySignedIn() {
+    if (!window.AuthGuards) return;
 
-    if (!user) return;
+    const context = await window.AuthGuards.getSessionContext();
 
-    const { data: profile, error } = await window.sb
-      .from("profiles")
-      .select("role")
-      .eq("id", user.id)
-      .single();
+    if (!context.user) return;
 
-    if (error || !profile || profile.role !== "admin") {
-      await window.sb.auth.signOut();
-      setMessage("Access denied. This account is not an administrator.", "error");
+    if (context.profile?.role === "admin") {
+      window.location.href = "./admin-dashboard.html";
       return;
     }
 
-    window.location.href = "./admin-dashboard.html";
+    if (context.profile?.role === "participant") {
+      window.location.href = "./participant-dashboard.html";
+      return;
+    }
   }
 
-  verifyAdminAndRedirect();
+  showReasonMessageFromUrl();
+  redirectIfAlreadySignedIn();
 
   form.addEventListener("submit", async (event) => {
     event.preventDefault();
-    setMessage("Signing in...");
+    setMessage("Signing in...", "success");
 
     const formData = new FormData(form);
     const email = formData.get("admin_email")?.toString().trim();
@@ -56,31 +65,24 @@ document.addEventListener("DOMContentLoaded", () => {
       return;
     }
 
-    await verifyAdminAndRedirect();
-  });
-
-  forgotPasswordBtn?.addEventListener("click", async () => {
-    const emailInput = document.getElementById("admin_email");
-    const email = emailInput?.value?.trim();
-
-    if (!email) {
-      setMessage("Enter your admin email first, then select 'Forgot password?'.", "error");
-      emailInput?.focus();
+    if (!window.AuthGuards) {
+      window.location.href = "./admin-dashboard.html";
       return;
     }
 
-    setMessage("Sending password reset email...");
+    const context = await window.AuthGuards.getSessionContext();
 
-    const { error } = await window.sb.auth.resetPasswordForEmail(email, {
-      redirectTo: getRecoveryRedirectUrl()
-    });
-
-    if (error) {
-      console.error(error);
-      setMessage(error.message, "error");
+    if (context.profile?.role === "admin") {
+      window.location.href = "./admin-dashboard.html";
       return;
     }
 
-    setMessage("If an account exists, a password reset link has been sent.", "success");
+    if (context.profile?.role === "participant") {
+      window.location.href = "./participant-dashboard.html";
+      return;
+    }
+
+    await window.sb.auth.signOut();
+    setMessage("You do not currently have administrator access.", "error");
   });
 });

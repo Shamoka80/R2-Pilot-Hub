@@ -8,30 +8,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
   let currentAdmin = null;
 
-  async function requireAdmin() {
-    const { data: userData } = await window.sb.auth.getUser();
-    const user = userData?.user;
 
-    if (!user) {
-      window.location.href = "./admin-login.html";
-      return false;
-    }
-
-    const { data: profile, error } = await window.sb
-      .from("profiles")
-      .select("id, email, role")
-      .eq("id", user.id)
-      .single();
-
-    if (error || !profile || profile.role !== "admin") {
-      await window.sb.auth.signOut();
-      window.location.href = "./admin-login.html";
-      return false;
-    }
-
-    currentAdmin = profile;
-    return true;
-  }
 
   function renderApprovedApplications(items) {
     if (!items.length) {
@@ -440,8 +417,16 @@ document.addEventListener("DOMContentLoaded", () => {
   refreshBtn?.addEventListener("click", loadAllParticipantData);
 
   (async () => {
-    const ok = await requireAdmin();
-    if (!ok) return;
+    if (!window.AuthGuards) {
+      message.textContent = "Access guard is not available.";
+      message.className = "message error";
+      return;
+    }
+
+    const context = await window.AuthGuards.requireAdminPage();
+    if (!context) return;
+
+    currentAdmin = context.profile;
     await loadAllParticipantData();
   })();
 });
