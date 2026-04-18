@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>My Progress | R2 Pilot Recruitment Hub</title>
+  <link rel="stylesheet" href="./assets/css/styles.css" />
+</head>
+<body>
+  <header class="site-header">
+    <div class="container">
+      <h1>R2 Pilot Recruitment Hub</h1>
+      <nav>
+        <a href="./participant-dashboard.html">Dashboard</a>
+        <a href="./participant-status.html">My Status</a>
+        <a href="./participant-progress.html">My Progress</a>
+        <a href="./submit-feedback.html">Submit Feedback</a>
+        <a href="./participant-feedback-history.html">My Feedback</a>
+      </nav>
+    </div>
+  </header>
+
+  <main class="container">
+    <section class="page-shell narrow">
+      <h2>My Progress</h2>
+      <p class="muted">
+        Record your current testing progress so the program administrator can monitor your pilot status.
+      </p>
+
+      <form id="participant-progress-form">
+        <div>
+          <label for="progress_stage">Progress Stage</label>
+          <select id="progress_stage" name="progress_stage" required>
+            <option value="not_started">not_started</option>
+            <option value="started">started</option>
+            <option value="in_progress">in_progress</option>
+            <option value="blocked">blocked</option>
+            <option value="completed">completed</option>
+          </select>
+        </div>
+
+        <div>
+          <label for="percent_complete">Percent Complete</label>
+          <input id="percent_complete" name="percent_complete" type="number" min="0" max="100" required />
+        </div>
+
+        <div>
+          <label for="participant_note">Participant Progress Note</label>
+          <textarea id="participant_note" name="participant_note" rows="6"></textarea>
+        </div>
+
+        <div class="notes-block">
+          <strong>Admin Progress Note</strong>
+          <p id="participant-admin-progress-note">No admin note is available yet.</p>
+        </div>
+
+        <button type="submit">Save Progress</button>
+        <p id="participant-progress-message" class="message"></p>
+      </form>
+    </section>
+  </main>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="./assets/js/config.js"></script>
+  <script src="./assets/js/supabase-client.js"></script>
+  <script src="./assets/js/participant-progress.js"></script>
+</body>
+</html>
