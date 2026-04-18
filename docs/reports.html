@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Reports | R2 Pilot Recruitment Hub</title>
+  <link rel="stylesheet" href="./assets/css/styles.css" />
+</head>
+<body>
+  <header class="site-header">
+    <div class="container">
+      <h1>R2 Pilot Recruitment Hub</h1>
+      <nav>
+        <a href="./index.html">Home</a>
+        <a href="./admin-dashboard.html">Dashboard</a>
+        <a href="./applications.html">Applications</a>
+        <a href="./participants.html">Participants</a>
+        <a href="./progress.html">Progress</a>
+        <a href="./feedback.html">Feedback</a>
+        <a href="./reports.html">Reports</a>
+      </nav>
+    </div>
+  </header>
+
+  <main class="container">
+    <section class="page-shell">
+      <div class="toolbar">
+        <div>
+          <h2>Reports</h2>
+          <p class="muted">Download current operational data as CSV files for analysis and recordkeeping.</p>
+        </div>
+      </div>
+
+      <p id="reports-message" class="message"></p>
+
+      <div class="card-grid">
+        <article class="item-card">
+          <h3>Applications</h3>
+          <p class="muted">Export all application records and admin decision fields.</p>
+          <div class="actions">
+            <button type="button" id="export-applications">Export Applications CSV</button>
+          </div>
+        </article>
+
+        <article class="item-card">
+          <h3>Participants</h3>
+          <p class="muted">Export participant records, assignment data, and onboarding state.</p>
+          <div class="actions">
+            <button type="button" id="export-participants">Export Participants CSV</button>
+          </div>
+        </article>
+
+        <article class="item-card">
+          <h3>Participant Progress</h3>
+          <p class="muted">Export current participant progress snapshots and admin notes.</p>
+          <div class="actions">
+            <button type="button" id="export-progress">Export Progress CSV</button>
+          </div>
+        </article>
+
+        <article class="item-card">
+          <h3>Feedback</h3>
+          <p class="muted">Export submitted issues, notes, requests, comments, and admin review fields.</p>
+          <div class="actions">
+            <button type="button" id="export-feedback">Export Feedback CSV</button>
+          </div>
+        </article>
+
+        <article class="item-card">
+          <h3>Admin Actions</h3>
+          <p class="muted">Export logged admin actions for oversight and traceability.</p>
+          <div class="actions">
+            <button type="button" id="export-admin-actions">Export Admin Actions CSV</button>
+          </div>
+        </article>
+      </div>
+    </section>
+  </main>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="./assets/js/config.js"></script>
+  <script src="./assets/js/supabase-client.js"></script>
+  <script src="./assets/js/reports.js"></script>
+</body>
+</html>
