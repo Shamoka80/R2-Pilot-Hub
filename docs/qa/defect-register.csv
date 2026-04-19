@@ -1,0 +1,1 @@
+defect_id,date_utc,reported_by,area,workflow,role,group_name,scenario_name,wave_name,severity,status,summary,reproduction_steps,expected_result,actual_result,owner,target_fix_date,evidence_links
