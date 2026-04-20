@@ -1,4 +1,6 @@
 document.addEventListener("DOMContentLoaded", () => {
+  const ALLOWED_FEEDBACK_KINDS = new Set(["issue", "finding", "suggestion", "request"]);
+
   const message = document.getElementById("reports-message");
   const exportApplicationsBtn = document.getElementById("export-applications");
   const exportParticipantsBtn = document.getElementById("export-participants");
@@ -9,6 +11,10 @@ document.addEventListener("DOMContentLoaded", () => {
   if (!window.sb) return;
 
 
+
+  function normalizeFeedbackKind(kind) {
+    return ALLOWED_FEEDBACK_KINDS.has(kind) ? kind : "unknown";
+  }
 
   function escapeCsvValue(value) {
     if (value === null || value === undefined) return "";
@@ -191,7 +197,7 @@ document.addEventListener("DOMContentLoaded", () => {
       submitted_by: item.submitted_by,
       email: item.profiles?.email || "",
       full_name: item.profiles?.full_name || "",
-      kind: item.kind,
+      kind: normalizeFeedbackKind(item.kind),
       title: item.title,
       details: item.details,
       severity: item.severity,

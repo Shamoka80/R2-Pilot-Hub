@@ -1,4 +1,11 @@
 document.addEventListener("DOMContentLoaded", () => {
+  const FEEDBACK_KIND_LABELS = {
+    issue: "Issue",
+    finding: "Finding",
+    suggestion: "Suggestion",
+    request: "Request"
+  };
+
   const message = document.getElementById("admin-dashboard-message");
   const content = document.getElementById("admin-dashboard-content");
   const refreshBtn = document.getElementById("refresh-admin-dashboard");
@@ -43,6 +50,15 @@ document.addEventListener("DOMContentLoaded", () => {
         </div>
       </article>
     `;
+  }
+
+  function countFeedbackKinds(items) {
+    return items.reduce((acc, item) => {
+      const kind = item.kind;
+      const label = FEEDBACK_KIND_LABELS[kind] || "Unknown";
+      acc[label] = (acc[label] || 0) + 1;
+      return acc;
+    }, {});
   }
 
   function renderRecentApplications(items) {
@@ -248,7 +264,7 @@ document.addEventListener("DOMContentLoaded", () => {
     const participantWaveCounts = countBy(participants || [], "wave_name");
     const feedbackStatusCounts = countBy(feedbackItems || [], "status");
     const feedbackSeverityCounts = countBy(feedbackItems || [], "severity");
-    const feedbackKindCounts = countBy(feedbackItems || [], "kind");
+    const feedbackKindCounts = countFeedbackKinds(feedbackItems || []);
     const progressStageCounts = countBy(participantProgress || [], "progress_stage");
     const ndaStatusCounts = countBy(participants || [], "nda_status");
     const orientationStatusCounts = countBy(participants || [], "orientation_status");

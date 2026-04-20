@@ -1,4 +1,11 @@
 document.addEventListener("DOMContentLoaded", () => {
+  const FEEDBACK_KIND_LABELS = {
+    issue: "Issue",
+    finding: "Finding",
+    suggestion: "Suggestion",
+    request: "Request"
+  };
+
   const list = document.getElementById("admin-feedback-list");
   const message = document.getElementById("admin-feedback-message");
   const refreshBtn = document.getElementById("refresh-feedback-page");
@@ -6,6 +13,10 @@ document.addEventListener("DOMContentLoaded", () => {
   if (!window.sb || !list) return;
 
 
+
+  function formatFeedbackKind(kind) {
+    return FEEDBACK_KIND_LABELS[kind] || "Unknown";
+  }
 
   function renderItems(items) {
     if (!items.length) {
@@ -17,7 +28,7 @@ document.addEventListener("DOMContentLoaded", () => {
       <article class="item-card" data-id="${item.id}">
         <div class="item-header">
           <h3>${item.title}</h3>
-          <span class="badge">${item.kind}</span>
+          <span class="badge">${formatFeedbackKind(item.kind)}</span>
         </div>
 
         <div class="meta">
