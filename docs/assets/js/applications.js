@@ -8,7 +8,42 @@ document.addEventListener("DOMContentLoaded", () => {
 
   let currentAdmin = null;
 
+  function normalizeQualificationNote(rawNote) {
+    return (rawNote || "").trim();
+  }
 
+  async function resolveStatusAndQualificationNote(applicationId, requestedStatus) {
+    const notesEl = document.getElementById(`decision-${applicationId}`);
+    const existingNote = normalizeQualificationNote(notesEl ? notesEl.value : "");
+
+    if (existingNote) {
+      return { finalStatus: requestedStatus, qualificationNote: existingNote };
+    }
+
+    const shouldKeepPending = window.confirm(
+      "No qualification note is present. Click OK to keep this application as pending, or Cancel to provide a qualification note and continue."
+    );
+
+    if (shouldKeepPending) {
+      return { finalStatus: "pending", qualificationNote: null };
+    }
+
+    const promptedNote = window.prompt(
+      `Please enter a qualification note before setting status to "${requestedStatus}".`,
+      ""
+    );
+    const qualificationNote = normalizeQualificationNote(promptedNote);
+
+    if (!qualificationNote) {
+      return null;
+    }
+
+    if (notesEl) {
+      notesEl.value = qualificationNote;
+    }
+
+    return { finalStatus: requestedStatus, qualificationNote };
+  }
 
   function badgeClass(status) {
     if (status === "approved") return "badge success";
@@ -99,19 +134,30 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 
   async function updateApplicationStatus(applicationId, status) {
-    const notesEl = document.getElementById(`decision-${applicationId}`);
-    const adminNotes = notesEl ? notesEl.value.trim() : "";
+    const resolution = await resolveStatusAndQualificationNote(applicationId, status);
+    if (!resolution) {
+      message.textContent = "Qualification note is required to approve or reject this application.";
+      message.className = "message error";
+      return;
+    }
 
-    message.textContent = `${status === "approved" ? "Approving" : "Rejecting"} application...`;
+    const { finalStatus, qualificationNote } = resolution;
+    const actionLabel = finalStatus === "approved"
+      ? "Approving"
+      : finalStatus === "rejected"
+        ? "Rejecting"
+        : "Setting to pending";
+
+    message.textContent = `${actionLabel} application...`;
     message.className = "message";
 
     const { error } = await window.sb
       .from("applications")
       .update({
-        status,
+        status: finalStatus,
         reviewed_by: currentAdmin.id,
         reviewed_at: new Date().toISOString(),
-        admin_decision_notes: adminNotes || null
+        admin_decision_notes: qualificationNote || null
       })
       .eq("id", applicationId);
 
@@ -123,9 +169,13 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 
     await logAdminAction(
-      status === "approved" ? "approve_application" : "reject_application",
+      finalStatus === "approved"
+        ? "approve_application"
+        : finalStatus === "rejected"
+          ? "reject_application"
+          : "set_application_pending",
       applicationId,
-      adminNotes
+      qualificationNote
     );
 
     await loadApplications();

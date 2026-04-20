@@ -8,6 +8,62 @@ document.addEventListener("DOMContentLoaded", () => {
 
   let currentAdmin = null;
 
+  const PARTICIPANT_GROUP_OPTIONS = [
+    "Facility Group",
+    "Consultant Group",
+    "Certification Review Group",
+    "Program Observer Group"
+  ];
+  const PARTICIPANT_SCENARIO_OPTIONS = [
+    "First-Time Seeker",
+    "Active Certified",
+    "Lapsed / Not Renewed",
+    "Failed / Revoked / Suspended / Remediation-Focused"
+  ];
+  const PARTICIPANT_WAVE_OPTIONS = ["Wave 1", "Wave 2", "Wave 3"];
+
+  const PARTICIPANT_GROUP_SET = new Set(PARTICIPANT_GROUP_OPTIONS);
+  const PARTICIPANT_SCENARIO_SET = new Set(PARTICIPANT_SCENARIO_OPTIONS);
+  const PARTICIPANT_WAVE_SET = new Set(PARTICIPANT_WAVE_OPTIONS);
+
+  function renderSelectOptions(options, selectedValue = "") {
+    return options
+      .map((option) => `<option value="${option}" ${selectedValue === option ? "selected" : ""}>${option}</option>`)
+      .join("");
+  }
+
+  function getCanonicalSelection(rawValue, allowedSet) {
+    const normalized = (rawValue || "").trim();
+    return allowedSet.has(normalized) ? normalized : null;
+  }
+
+  function validateParticipantAssignment(group_name, scenario_name, wave_name, contextLabel = "assignment") {
+    if (!group_name || !scenario_name || !wave_name) {
+      message.textContent = "You must select Group, Scenario, and Wave before continuing.";
+      message.className = "message error";
+      return false;
+    }
+
+    if (!PARTICIPANT_GROUP_SET.has(group_name)) {
+      message.textContent = `Invalid Group selected for ${contextLabel}. Refresh the page and try again.`;
+      message.className = "message error";
+      return false;
+    }
+
+    if (!PARTICIPANT_SCENARIO_SET.has(scenario_name)) {
+      message.textContent = `Invalid Scenario selected for ${contextLabel}. Refresh the page and try again.`;
+      message.className = "message error";
+      return false;
+    }
+
+    if (!PARTICIPANT_WAVE_SET.has(wave_name)) {
+      message.textContent = `Invalid Wave selected for ${contextLabel}. Refresh the page and try again.`;
+      message.className = "message error";
+      return false;
+    }
+
+    return true;
+  }
 
 
   function renderApprovedApplications(items) {
@@ -35,10 +91,7 @@ document.addEventListener("DOMContentLoaded", () => {
             <label for="create-group-${item.id}">Assign Group</label>
             <select id="create-group-${item.id}">
               <option value="">Select one</option>
-              <option value="Facility Group">Facility Group</option>
-              <option value="Consultant Group">Consultant Group</option>
-              <option value="Certification Review Group">Certification Review Group</option>
-              <option value="Program Observer Group">Program Observer Group</option>
+              ${renderSelectOptions(PARTICIPANT_GROUP_OPTIONS)}
             </select>
           </div>
 
@@ -46,10 +99,7 @@ document.addEventListener("DOMContentLoaded", () => {
             <label for="create-scenario-${item.id}">Assign Scenario</label>
             <select id="create-scenario-${item.id}">
               <option value="">Select one</option>
-              <option value="First-Time Seeker">First-Time Seeker</option>
-              <option value="Active Certified">Active Certified</option>
-              <option value="Lapsed / Not Renewed">Lapsed / Not Renewed</option>
-              <option value="Failed / Revoked / Suspended / Remediation-Focused">Failed / Revoked / Suspended / Remediation-Focused</option>
+              ${renderSelectOptions(PARTICIPANT_SCENARIO_OPTIONS)}
             </select>
           </div>
 
@@ -57,9 +107,7 @@ document.addEventListener("DOMContentLoaded", () => {
             <label for="create-wave-${item.id}">Assign Wave</label>
             <select id="create-wave-${item.id}">
               <option value="">Select one</option>
-              <option value="Wave 1">Wave 1</option>
-              <option value="Wave 2">Wave 2</option>
-              <option value="Wave 3">Wave 3</option>
+              ${renderSelectOptions(PARTICIPANT_WAVE_OPTIONS)}
             </select>
           </div>
         </div>
@@ -97,29 +145,21 @@ document.addEventListener("DOMContentLoaded", () => {
           <div>
             <label for="group-${item.user_id}">Update Group</label>
             <select id="group-${item.user_id}">
-              <option value="Facility Group" ${item.group_name === "Facility Group" ? "selected" : ""}>Facility Group</option>
-              <option value="Consultant Group" ${item.group_name === "Consultant Group" ? "selected" : ""}>Consultant Group</option>
-              <option value="Certification Review Group" ${item.group_name === "Certification Review Group" ? "selected" : ""}>Certification Review Group</option>
-              <option value="Program Observer Group" ${item.group_name === "Program Observer Group" ? "selected" : ""}>Program Observer Group</option>
+              ${renderSelectOptions(PARTICIPANT_GROUP_OPTIONS, getCanonicalSelection(item.group_name, PARTICIPANT_GROUP_SET) || PARTICIPANT_GROUP_OPTIONS[0])}
             </select>
           </div>
 
           <div>
             <label for="scenario-${item.user_id}">Update Scenario</label>
             <select id="scenario-${item.user_id}">
-              <option value="First-Time Seeker" ${item.scenario_name === "First-Time Seeker" ? "selected" : ""}>First-Time Seeker</option>
-              <option value="Active Certified" ${item.scenario_name === "Active Certified" ? "selected" : ""}>Active Certified</option>
-              <option value="Lapsed / Not Renewed" ${item.scenario_name === "Lapsed / Not Renewed" ? "selected" : ""}>Lapsed / Not Renewed</option>
-              <option value="Failed / Revoked / Suspended / Remediation-Focused" ${item.scenario_name === "Failed / Revoked / Suspended / Remediation-Focused" ? "selected" : ""}>Failed / Revoked / Suspended / Remediation-Focused</option>
+              ${renderSelectOptions(PARTICIPANT_SCENARIO_OPTIONS, getCanonicalSelection(item.scenario_name, PARTICIPANT_SCENARIO_SET) || PARTICIPANT_SCENARIO_OPTIONS[0])}
             </select>
           </div>
 
           <div>
             <label for="wave-${item.user_id}">Update Wave</label>
             <select id="wave-${item.user_id}">
-              <option value="Wave 1" ${item.wave_name === "Wave 1" ? "selected" : ""}>Wave 1</option>
-              <option value="Wave 2" ${item.wave_name === "Wave 2" ? "selected" : ""}>Wave 2</option>
-              <option value="Wave 3" ${item.wave_name === "Wave 3" ? "selected" : ""}>Wave 3</option>
+              ${renderSelectOptions(PARTICIPANT_WAVE_OPTIONS, getCanonicalSelection(item.wave_name, PARTICIPANT_WAVE_SET) || PARTICIPANT_WAVE_OPTIONS[0])}
             </select>
           </div>
 
@@ -252,13 +292,20 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 
   async function createParticipantFromApplication(application) {
-    const group_name = document.getElementById(`create-group-${application.id}`)?.value || "";
-    const scenario_name = document.getElementById(`create-scenario-${application.id}`)?.value || "";
-    const wave_name = document.getElementById(`create-wave-${application.id}`)?.value || "";
+    const group_name = getCanonicalSelection(
+      document.getElementById(`create-group-${application.id}`)?.value,
+      PARTICIPANT_GROUP_SET
+    );
+    const scenario_name = getCanonicalSelection(
+      document.getElementById(`create-scenario-${application.id}`)?.value,
+      PARTICIPANT_SCENARIO_SET
+    );
+    const wave_name = getCanonicalSelection(
+      document.getElementById(`create-wave-${application.id}`)?.value,
+      PARTICIPANT_WAVE_SET
+    );
 
-    if (!group_name || !scenario_name || !wave_name) {
-      message.textContent = "You must select Group, Scenario, and Wave before creating a participant.";
-      message.className = "message error";
+    if (!validateParticipantAssignment(group_name, scenario_name, wave_name, "participant creation")) {
       return;
     }
 
@@ -323,15 +370,28 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 
   async function saveParticipantUpdate(userId) {
-    const group_name = document.getElementById(`group-${userId}`)?.value || null;
-    const scenario_name = document.getElementById(`scenario-${userId}`)?.value || null;
-    const wave_name = document.getElementById(`wave-${userId}`)?.value || null;
+    const group_name = getCanonicalSelection(
+      document.getElementById(`group-${userId}`)?.value,
+      PARTICIPANT_GROUP_SET
+    );
+    const scenario_name = getCanonicalSelection(
+      document.getElementById(`scenario-${userId}`)?.value,
+      PARTICIPANT_SCENARIO_SET
+    );
+    const wave_name = getCanonicalSelection(
+      document.getElementById(`wave-${userId}`)?.value,
+      PARTICIPANT_WAVE_SET
+    );
     const onboard_status = document.getElementById(`status-${userId}`)?.value || null;
     const is_active = document.getElementById(`active-${userId}`)?.value === "true";
     const nda_status = document.getElementById(`nda-${userId}`)?.value || "not_sent";
     const orientation_status = document.getElementById(`orientation-${userId}`)?.value || "not_scheduled";
     const onboarding_packet_url = document.getElementById(`packet-url-${userId}`)?.value?.trim() || null;
     const onboarding_instructions = document.getElementById(`instructions-${userId}`)?.value?.trim() || null;
+
+    if (!validateParticipantAssignment(group_name, scenario_name, wave_name, "participant update")) {
+      return;
+    }
 
     message.textContent = "Saving participant update...";
     message.className = "message";
