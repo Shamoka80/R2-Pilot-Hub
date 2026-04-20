@@ -96,10 +96,36 @@ document.addEventListener("DOMContentLoaded", () => {
         </div>
 
         <div class="actions">
-          <button type="button" data-save-feedback="${item.id}" data-current-admin-status="${item.admin_status || "new"}">Save Update</button>
+          <button
+            type="button"
+            data-save-feedback="${item.id}"
+            data-current-admin-status="${item.admin_status || "new"}"
+            data-current-severity="${item.severity || "medium"}"
+          >
+            Save Update
+          </button>
         </div>
       </article>
     `).join("");
+  }
+
+  async function insertFeedbackTriageAction({
+    targetId,
+    actionNotes
+  }) {
+    const { error } = await window.sb
+      .from("admin_actions")
+      .insert([
+        {
+          admin_user_id: currentAdminUserId,
+          action_type: "update_feedback_status",
+          target_table: "feedback_items",
+          target_id: targetId,
+          action_notes: actionNotes
+        }
+      ]);
+
+    return error;
   }
 
   async function loadFeedbackItems() {
@@ -133,7 +159,7 @@ document.addEventListener("DOMContentLoaded", () => {
     message.className = "message success";
   }
 
-  async function saveFeedbackUpdate(itemId, previousAdminStatus) {
+  async function saveFeedbackUpdate(itemId, previousAdminStatus, previousSeverity) {
     const severity = document.getElementById(`severity-${itemId}`)?.value;
     const adminStatus = document.getElementById(`admin-status-${itemId}`)?.value;
     const adminNotes = document.getElementById(`admin-notes-${itemId}`)?.value?.trim() || null;
@@ -152,19 +178,65 @@ document.addEventListener("DOMContentLoaded", () => {
       updates.admin_status_updated_by = currentAdminUserId;
     }
 
-    const { error } = await window.sb
-      .from("feedback_items")
-      .update(updates)
-      .eq("id", itemId);
+    const triageSummary = [
+      `status:${previousAdminStatus || "new"}->${adminStatus || "new"}`,
+      `severity:${previousSeverity || "medium"}->${severity || "medium"}`
+    ].join("; ");
 
-    if (error) {
-      console.error(error);
-      message.textContent = error.message;
+    const { error: rpcError } = await window.sb.rpc("update_feedback_item_with_admin_log", {
+      p_feedback_id: itemId,
+      p_admin_user_id: currentAdminUserId,
+      p_severity: severity,
+      p_admin_status: adminStatus,
+      p_admin_notes: adminNotes,
+      p_action_type: "update_feedback_status",
+      p_target_table: "feedback_items",
+      p_action_notes: triageSummary
+    });
+
+    const shouldFallbackToClientFlow =
+      rpcError &&
+      (
+        rpcError.code === "PGRST202" ||
+        rpcError.message?.toLowerCase().includes("could not find the function")
+      );
+
+    if (rpcError && !shouldFallbackToClientFlow) {
+      console.error(rpcError);
+      message.textContent = rpcError.message;
       message.className = "message error";
       return;
     }
 
-    message.textContent = "Feedback item updated successfully.";
+    if (shouldFallbackToClientFlow) {
+      const { error: updateError } = await window.sb
+        .from("feedback_items")
+        .update(updates)
+        .eq("id", itemId);
+
+      if (updateError) {
+        console.error(updateError);
+        message.textContent = updateError.message;
+        message.className = "message error";
+        return;
+      }
+
+      const actionError = await insertFeedbackTriageAction({
+        targetId: itemId,
+        actionNotes: triageSummary
+      });
+
+      if (actionError) {
+        console.error(actionError);
+        message.textContent = actionError.message;
+        message.className = "message error";
+        return;
+      }
+    }
+
+    message.textContent = shouldFallbackToClientFlow
+      ? "Feedback item updated successfully (client fallback)."
+      : "Feedback item updated successfully.";
     message.className = "message success";
     await loadFeedbackItems();
   }
@@ -175,9 +247,10 @@ document.addEventListener("DOMContentLoaded", () => {
 
     const itemId = button.dataset.saveFeedback;
     const previousAdminStatus = button.dataset.currentAdminStatus || "new";
+    const previousSeverity = button.dataset.currentSeverity || "medium";
     if (!itemId) return;
 
-    await saveFeedbackUpdate(itemId, previousAdminStatus);
+    await saveFeedbackUpdate(itemId, previousAdminStatus, previousSeverity);
   });
 
   refreshBtn?.addEventListener("click", loadFeedbackItems);

@@ -235,7 +235,19 @@ document.addEventListener("DOMContentLoaded", () => {
       return;
     }
 
-    downloadCsv(`admin-actions-${getDateStamp()}.csv`, data || []);
+    const enriched = (data || []).map((row) => {
+      const isFeedbackTriage =
+        row.target_table === "feedback_items" &&
+        row.action_type === "update_feedback_status";
+
+      return {
+        ...row,
+        operational_review_stream: isFeedbackTriage ? "feedback-triage" : "general-admin",
+        feedback_triage_activity: isFeedbackTriage ? "yes" : "no"
+      };
+    });
+
+    downloadCsv(`admin-actions-${getDateStamp()}.csv`, enriched);
     message.textContent = "Admin actions export completed.";
     message.className = "message success";
   }
