@@ -1,4 +1,5 @@
 document.addEventListener("DOMContentLoaded", () => {
+  const ALLOWED_FEEDBACK_KINDS = new Set(["issue", "finding", "suggestion", "request"]);
   const form = document.getElementById("feedback-form");
   const message = document.getElementById("feedback-message");
 
@@ -19,10 +20,17 @@ document.addEventListener("DOMContentLoaded", () => {
     if (!context) return;
 
     const formData = new FormData(form);
+    const kind = formData.get("kind")?.toString().trim() || "";
+
+    if (!ALLOWED_FEEDBACK_KINDS.has(kind)) {
+      message.textContent = "Invalid feedback type selected. Please choose Issue, Finding, Suggestion, or Request.";
+      message.className = "message error";
+      return;
+    }
 
     const payload = {
       submitted_by: context.user.id,
-      kind: formData.get("kind")?.toString().trim(),
+      kind,
       title: formData.get("title")?.toString().trim(),
       details: formData.get("details")?.toString().trim(),
       severity: formData.get("severity")?.toString().trim(),

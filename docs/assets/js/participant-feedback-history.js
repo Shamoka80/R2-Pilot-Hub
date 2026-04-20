@@ -1,4 +1,11 @@
 document.addEventListener("DOMContentLoaded", () => {
+  const FEEDBACK_KIND_LABELS = {
+    issue: "Issue",
+    finding: "Finding",
+    suggestion: "Suggestion",
+    request: "Request"
+  };
+
   const message = document.getElementById("participant-feedback-message");
   const list = document.getElementById("participant-feedback-list");
   const refreshBtn = document.getElementById("refresh-participant-feedback");
@@ -10,6 +17,10 @@ document.addEventListener("DOMContentLoaded", () => {
     if (status === "closed") return "badge";
     if (status === "reviewing") return "badge";
     return "badge error";
+  }
+
+  function formatFeedbackKind(kind) {
+    return FEEDBACK_KIND_LABELS[kind] || "Unknown";
   }
 
   function renderFeedbackItems(items) {
@@ -26,7 +37,7 @@ document.addEventListener("DOMContentLoaded", () => {
         </div>
 
         <div class="meta">
-          <div><strong>Type:</strong> ${item.kind}</div>
+          <div><strong>Type:</strong> ${formatFeedbackKind(item.kind)}</div>
           <div><strong>Severity:</strong> ${item.severity}</div>
           <div><strong>Created:</strong> ${new Date(item.created_at).toLocaleString()}</div>
         </div>
