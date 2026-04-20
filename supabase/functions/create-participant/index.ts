@@ -7,6 +7,24 @@ const corsHeaders = {
   "Access-Control-Allow-Methods": "POST, OPTIONS",
 };
 
+const PARTICIPANT_GROUP_OPTIONS = [
+  "Facility Group",
+  "Consultant Group",
+  "Certification Review Group",
+  "Program Observer Group",
+] as const;
+const PARTICIPANT_SCENARIO_OPTIONS = [
+  "First-Time Seeker",
+  "Active Certified",
+  "Lapsed / Not Renewed",
+  "Failed / Revoked / Suspended / Remediation-Focused",
+] as const;
+const PARTICIPANT_WAVE_OPTIONS = ["Wave 1", "Wave 2", "Wave 3"] as const;
+
+const PARTICIPANT_GROUP_SET = new Set(PARTICIPANT_GROUP_OPTIONS);
+const PARTICIPANT_SCENARIO_SET = new Set(PARTICIPANT_SCENARIO_OPTIONS);
+const PARTICIPANT_WAVE_SET = new Set(PARTICIPANT_WAVE_OPTIONS);
+
 serve(async (req) => {
   if (req.method === "OPTIONS") {
     return new Response("ok", { headers: corsHeaders });
@@ -87,6 +105,36 @@ serve(async (req) => {
     if (!application_id || !applicant_email || !group_name || !scenario_name || !wave_name) {
       return new Response(
         JSON.stringify({ error: "Missing required fields" }),
+        {
+          status: 400,
+          headers: { ...corsHeaders, "Content-Type": "application/json" },
+        }
+      );
+    }
+
+    if (!PARTICIPANT_GROUP_SET.has(group_name as (typeof PARTICIPANT_GROUP_OPTIONS)[number])) {
+      return new Response(
+        JSON.stringify({ error: "Invalid group_name value" }),
+        {
+          status: 400,
+          headers: { ...corsHeaders, "Content-Type": "application/json" },
+        }
+      );
+    }
+
+    if (!PARTICIPANT_SCENARIO_SET.has(scenario_name as (typeof PARTICIPANT_SCENARIO_OPTIONS)[number])) {
+      return new Response(
+        JSON.stringify({ error: "Invalid scenario_name value" }),
+        {
+          status: 400,
+          headers: { ...corsHeaders, "Content-Type": "application/json" },
+        }
+      );
+    }
+
+    if (!PARTICIPANT_WAVE_SET.has(wave_name as (typeof PARTICIPANT_WAVE_OPTIONS)[number])) {
+      return new Response(
+        JSON.stringify({ error: "Invalid wave_name value" }),
         {
           status: 400,
           headers: { ...corsHeaders, "Content-Type": "application/json" },
