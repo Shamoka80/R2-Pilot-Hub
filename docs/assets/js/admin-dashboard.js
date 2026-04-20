@@ -93,7 +93,7 @@ document.addEventListener("DOMContentLoaded", () => {
           .map(
             (item) => `
           <div class="mini-list-row">
-            <span>${item.title} — ${item.status}</span>
+            <span>${item.title} — ${item.admin_status || "new"}</span>
             <strong>${new Date(item.created_at).toLocaleDateString()}</strong>
           </div>
         `,
@@ -262,9 +262,10 @@ document.addEventListener("DOMContentLoaded", () => {
     const applicationCounts = countBy(applications || [], "status");
     const participantStatusCounts = countBy(participants || [], "onboard_status");
     const participantWaveCounts = countBy(participants || [], "wave_name");
-    const feedbackStatusCounts = countBy(feedbackItems || [], "status");
+    const feedbackStatusCounts = countBy(feedbackItems || [], "admin_status");
     const feedbackSeverityCounts = countBy(feedbackItems || [], "severity");
     const feedbackKindCounts = countFeedbackKinds(feedbackItems || []);
+    const feedbackAreaCounts = countBy(feedbackItems || [], "r2_ready_area");
     const progressStageCounts = countBy(participantProgress || [], "progress_stage");
     const ndaStatusCounts = countBy(participants || [], "nda_status");
     const orientationStatusCounts = countBy(participants || [], "orientation_status");
@@ -361,6 +362,7 @@ document.addEventListener("DOMContentLoaded", () => {
         ${renderCountList("Feedback Status Breakdown", feedbackStatusCounts)}
         ${renderCountList("Feedback Severity Breakdown", feedbackSeverityCounts)}
         ${renderCountList("Feedback Type Breakdown", feedbackKindCounts)}
+        ${renderCountList("Feedback Area Breakdown", feedbackAreaCounts)}
       </section>
 
       <section class="card-grid">

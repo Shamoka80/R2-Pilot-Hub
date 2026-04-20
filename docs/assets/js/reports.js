@@ -198,12 +198,20 @@ document.addEventListener("DOMContentLoaded", () => {
       email: item.profiles?.email || "",
       full_name: item.profiles?.full_name || "",
       kind: normalizeFeedbackKind(item.kind),
+      r2_ready_area: item.r2_ready_area,
       title: item.title,
       details: item.details,
+      expected_behavior: item.expected_behavior,
+      actual_behavior: item.actual_behavior,
+      reproduction_steps: item.reproduction_steps,
       severity: item.severity,
       status: item.status,
+      admin_status: item.admin_status,
+      admin_status_updated_at: item.admin_status_updated_at,
+      admin_status_updated_by: item.admin_status_updated_by,
       admin_notes: item.admin_notes,
-      created_at: item.created_at
+      created_at: item.created_at,
+      updated_at: item.updated_at
     }));
 
     downloadCsv(`feedback-${getDateStamp()}.csv`, flattened);

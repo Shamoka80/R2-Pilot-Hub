@@ -6,16 +6,23 @@ document.addEventListener("DOMContentLoaded", () => {
     request: "Request"
   };
 
+  const ADMIN_STATUS_OPTIONS = ["new", "triaging", "in_review", "routed", "resolved", "closed", "deferred"];
+
   const list = document.getElementById("admin-feedback-list");
   const message = document.getElementById("admin-feedback-message");
   const refreshBtn = document.getElementById("refresh-feedback-page");
 
   if (!window.sb || !list) return;
 
-
+  let currentAdminUserId = null;
 
   function formatFeedbackKind(kind) {
     return FEEDBACK_KIND_LABELS[kind] || "Unknown";
+  }
+
+  function formatTimestamp(value) {
+    if (!value) return "—";
+    return new Date(value).toLocaleString();
   }
 
   function renderItems(items) {
@@ -33,14 +40,34 @@ document.addEventListener("DOMContentLoaded", () => {
 
         <div class="meta">
           <div><strong>Submitted By:</strong> ${item.profiles?.full_name || "—"} (${item.profiles?.email || "—"})</div>
+          <div><strong>R2 Ready Area:</strong> ${item.r2_ready_area || "unspecified"}</div>
           <div><strong>Severity:</strong> ${item.severity}</div>
-          <div><strong>Status:</strong> ${item.status}</div>
+          <div><strong>Participant Status:</strong> ${item.status}</div>
+          <div><strong>Admin Status:</strong> ${item.admin_status || "new"}</div>
+          <div><strong>Admin Status Updated:</strong> ${formatTimestamp(item.admin_status_updated_at)}</div>
+          <div><strong>Admin Status Updated By:</strong> ${item.admin_profile?.full_name || item.admin_profile?.email || "—"}</div>
           <div><strong>Created:</strong> ${new Date(item.created_at).toLocaleString()}</div>
+          <div><strong>Updated:</strong> ${formatTimestamp(item.updated_at)}</div>
         </div>
 
         <div class="notes-block">
           <strong>Participant Details</strong>
           <p>${item.details}</p>
+        </div>
+
+        <div class="notes-block">
+          <strong>Expected Behavior</strong>
+          <p>${item.expected_behavior || "—"}</p>
+        </div>
+
+        <div class="notes-block">
+          <strong>Actual Behavior</strong>
+          <p>${item.actual_behavior || "—"}</p>
+        </div>
+
+        <div class="notes-block">
+          <strong>Reproduction Steps</strong>
+          <p>${item.reproduction_steps || "—"}</p>
         </div>
 
         <div class="field-grid">
@@ -54,12 +81,11 @@ document.addEventListener("DOMContentLoaded", () => {
           </div>
 
           <div>
-            <label for="status-${item.id}">Update Status</label>
-            <select id="status-${item.id}">
-              <option value="open" ${item.status === "open" ? "selected" : ""}>Open</option>
-              <option value="reviewing" ${item.status === "reviewing" ? "selected" : ""}>Reviewing</option>
-              <option value="resolved" ${item.status === "resolved" ? "selected" : ""}>Resolved</option>
-              <option value="closed" ${item.status === "closed" ? "selected" : ""}>Closed</option>
+            <label for="admin-status-${item.id}">Update Admin Status</label>
+            <select id="admin-status-${item.id}">
+              ${ADMIN_STATUS_OPTIONS.map((statusOption) => `
+                <option value="${statusOption}" ${item.admin_status === statusOption ? "selected" : ""}>${statusOption}</option>
+              `).join("")}
             </select>
           </div>
         </div>
@@ -70,7 +96,7 @@ document.addEventListener("DOMContentLoaded", () => {
         </div>
 
         <div class="actions">
-          <button type="button" data-save-feedback="${item.id}">Save Update</button>
+          <button type="button" data-save-feedback="${item.id}" data-current-admin-status="${item.admin_status || "new"}">Save Update</button>
         </div>
       </article>
     `).join("");
@@ -85,6 +111,10 @@ document.addEventListener("DOMContentLoaded", () => {
       .select(`
         *,
         profiles:submitted_by (
+          full_name,
+          email
+        ),
+        admin_profile:admin_status_updated_by (
           full_name,
           email
         )
@@ -103,21 +133,28 @@ document.addEventListener("DOMContentLoaded", () => {
     message.className = "message success";
   }
 
-  async function saveFeedbackUpdate(itemId) {
+  async function saveFeedbackUpdate(itemId, previousAdminStatus) {
     const severity = document.getElementById(`severity-${itemId}`)?.value;
-    const status = document.getElementById(`status-${itemId}`)?.value;
+    const adminStatus = document.getElementById(`admin-status-${itemId}`)?.value;
     const adminNotes = document.getElementById(`admin-notes-${itemId}`)?.value?.trim() || null;
 
     message.textContent = "Saving update...";
     message.className = "message";
 
+    const updates = {
+      severity,
+      admin_status: adminStatus,
+      admin_notes: adminNotes
+    };
+
+    if (adminStatus !== previousAdminStatus) {
+      updates.admin_status_updated_at = new Date().toISOString();
+      updates.admin_status_updated_by = currentAdminUserId;
+    }
+
     const { error } = await window.sb
       .from("feedback_items")
-      .update({
-        severity,
-        status,
-        admin_notes: adminNotes
-      })
+      .update(updates)
       .eq("id", itemId);
 
     if (error) {
@@ -137,9 +174,10 @@ document.addEventListener("DOMContentLoaded", () => {
     if (!button) return;
 
     const itemId = button.dataset.saveFeedback;
+    const previousAdminStatus = button.dataset.currentAdminStatus || "new";
     if (!itemId) return;
 
-    await saveFeedbackUpdate(itemId);
+    await saveFeedbackUpdate(itemId, previousAdminStatus);
   });
 
   refreshBtn?.addEventListener("click", loadFeedbackItems);
@@ -153,6 +191,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
     const context = await window.AuthGuards.requireAdminPage();
     if (!context) return;
+    currentAdminUserId = context.user.id;
 
     await loadFeedbackItems();
   })();
